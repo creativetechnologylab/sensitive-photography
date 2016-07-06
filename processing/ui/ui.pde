@@ -25,7 +25,7 @@ Minim minim;
 AudioInput in;
 
 void setup() {
-  // fullScreen();
+  //fullScreen();
   size(700, 700);
   colorMode(HSB, 360, 100, 100, 1.0);
 
@@ -53,10 +53,10 @@ void showCircle(int state) {
 
   int cwidth = 20;
   int cheight = 20;
-  
+
   float level = map(in.left.level(), 0, 0.05, 0, 1);
   level = constrain(level, 0, 1);
-  
+
   switch(state) {
   case 1:
     // Recording.
@@ -100,20 +100,24 @@ void draw() {
     if (easing == true) {
       current += dTarget*speed;
     } else {
+      
+      speed = (current < adjustTarget) ? abs(speed) : 0-abs(speed);
+      println( "current:" + current );
+      println( "target:" + adjustTarget );
+      println( "speed:" + speed );
 
-      speed = (current < adjustTarget) ? speed : speed*-1;
-      if ((speed > 0 && current+speed > adjustTarget)
-        || (speed < 0 && current+speed < adjustTarget)) {
-        current = adjustTarget;
+      if ( (speed > 0 && current+speed > adjustTarget) || (speed < 0 && current+speed < adjustTarget) ) {
+         println("blocked");
+         current = adjustTarget;
       } else {
         current += speed;
       }
-    }
+      println("current:" + current);
 
+    }
     current = constrain(current, -1, 1);
 
-    println("adjustTarget" +adjustTarget);
-    println(current);
+    println("=========");
 
     if (current > 0) {
       c = color(hue(c1), int(current*saturation(c1)), brightness(c1));
@@ -132,7 +136,7 @@ void draw() {
   } else if (processing == true) {
     showCircle(2);
   } else if (pausing == true) {
-    showCircle(1);
+    showCircle(3);
   }
 }
 
