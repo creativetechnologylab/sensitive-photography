@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+  <title>Node-RED Video player</title>
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <script type="text/javascript">
+    // Create the socket
+    var ws = io('/video');
+
+    ws.on('connect', function() {
+      console.log("CONNECTED");
+      ws.emit("video",{action:"connected"});
+    });
+    ws.on('error', function(e) {
+      console.log("ERROR", e);
+      // document.getElementById("foot").innerHTML = "<font color='#C00'>"+ibmfoot+"</font>";
+      // setTimeout(function() { ws.connect(); }, 2500);
+    });
+
+
+  </script>
+  <h1>Hello World!</h1>
+
+</body>
+</html>
