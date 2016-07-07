@@ -18,6 +18,6 @@ mkdir ~/Desktop/audio/
 sed -i 's/gfoote/$USER/g' $DIR/../node-red/flow.json
 sed -i 's/gfoote/$USER/g' $DIR/../node-red/flow_cred.json
 
-open ${DIR}/../processing/ui/application.macosx/ui.app
+sleep 2
 open http://127.0.0.1:1880/
-
+open ${DIR}/../processing/ui/application.macosx/ui.app
