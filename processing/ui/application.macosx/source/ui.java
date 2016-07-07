@@ -37,7 +37,7 @@ OscMessage message;
 int messageId = 0;
 boolean processing = false;
 boolean recording = false;
-boolean pausing = false;
+boolean pausing = true;
 
 int pauseTimer;
 
@@ -45,8 +45,8 @@ Minim minim;
 AudioInput in;
 
 public void setup() {
+  //fullScreen();
   
-  //size(700, 700);
   colorMode(HSB, 360, 100, 100, 1.0f);
 
   oscP5 = new OscP5(this, 13000);
@@ -111,8 +111,8 @@ public void draw() {
 
   background(0);
 
-  int c1 = color(53, 65, 73); // yellow
-  int c2 = color(358, 69, 73);  // red
+  int c1 = color(358, 69, 73); // red
+  int c2 = color(53, 65, 73);  // yellow
 
   if (adjustTarget != current) {
 
@@ -153,8 +153,6 @@ public void draw() {
 
   if (pausing == false && recording == false && processing == false) {
     startRecording();
-  } else if (recording == true) {
-    showCircle(1);
   } else if (processing == true) {
     showCircle(2);
   } else if (pausing == true) {
@@ -178,7 +176,7 @@ public void oscEvent(OscMessage theOscMessage) {
   if (theOscMessage.checkAddrPattern("/processingcomplete") == true) {
     recording = false;
     processing = false;
-    pausing = false;
+    pausing = true;
     showCircle(3);
 
     if (theOscMessage.checkTypetag("i")) {
@@ -224,9 +222,9 @@ public void keyPressed() {
   }
 
 
-  // adjustTarget = map(_key, -5, 5, -1, 1);
+  adjustTarget = map(_key, -5, 5, -1, 1);
 } 
-  public void settings() {  fullScreen();  pixelDensity(2); }
+  public void settings() {  size(700, 700);  pixelDensity(2); }
   static public void main(String[] passedArgs) {
     String[] appletArgs = new String[] { "ui" };
     if (passedArgs != null) {
