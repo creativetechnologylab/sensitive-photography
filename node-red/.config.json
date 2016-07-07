@@ -437,6 +437,23 @@
     }
    }
   },
+  "node-red-node-arduino": {
+   "name": "node-red-node-arduino",
+   "version": "0.0.7",
+   "nodes": {
+    "arduino": {
+     "name": "arduino",
+     "types": [
+      "arduino in",
+      "arduino out",
+      "arduino-board"
+     ],
+     "enabled": true,
+     "module": "node-red-node-arduino",
+     "file": "/Users/gfoote/Dropbox/Projects/EMILY_CUSSINS/sensitive-photography/node-red/node_modules/node-red-node-arduino/35-arduino.js"
+    }
+   }
+  },
   "node-red-node-email": {
    "name": "node-red-node-email",
    "version": "0.1.6",
