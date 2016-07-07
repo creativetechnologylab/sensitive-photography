@@ -31,8 +31,8 @@ Minim minim;
 AudioInput in;
 
 void setup() {
-  //fullScreen();
-  size(1200, 800);
+  fullScreen();
+  // size(1200, 800);
   colorMode(HSB, 360, 100, 100, 1.0);
 
   oscP5 = new OscP5(this, 13000);
