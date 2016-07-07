@@ -21,6 +21,7 @@
     "node-red": "^0.13.4",
     "node-red-contrib-osc": "0.0.6",
     "node-red-contrib-ui": "^1.2.19",
-    "node-red-node-watson": "^0.4.4"
+    "node-red-node-watson": "^0.4.4",
+    "node-red-node-arduino": "0.0.7",
   }
 }
