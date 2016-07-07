@@ -17,21 +17,27 @@ OscMessage message;
 int messageId = 0;
 boolean processing = false;
 boolean recording = false;
-boolean pausing = false;
+boolean pausing = true;
+boolean debug = false;
 
-int pauseTimer;
+int recordTimer = millis()/1000;
+int averageVolume;
+
+float[] data = new float[60];
+float total = 0, average = 0;
+int p = 0, n = 0;
 
 Minim minim;
 AudioInput in;
 
 void setup() {
   //fullScreen();
-  size(700, 700);
+  size(1200, 800);
   colorMode(HSB, 360, 100, 100, 1.0);
 
   oscP5 = new OscP5(this, 13000);
   location = new NetAddress("127.0.0.1", 12000);
-  
+
   //int dd = displayDensity();
   pixelDensity(displayDensity());
   img = loadImage("final_2400x1600.jpg");  // Load the image into the program
@@ -42,12 +48,39 @@ void setup() {
 
   // use the getLineIn method of the Minim object to get an AudioInput
   in = minim.getLineIn();
+  
+  send("/kill", 0);
+  //delay(5000);
 }
 
 void send(String topic, int id) {
   message = new OscMessage(topic);
   message.add(id);
   oscP5.send(message, location);
+}
+
+void showMessage(String msg, int offsetX, int offsetY) {
+  textSize(12);
+  textAlign(LEFT);
+  fill(0, 0, 99);
+  text(msg, 20, 29);
+}
+
+void showPaused(){
+  showMessage("Waiting. Please speak." + average, 0, 0);
+}
+
+void showRecording() {
+  int now = millis()/1000;
+  int count = 10 - (now-recordTimer);
+  
+  showCircle(1);
+  if(count > 0) {
+    fill(0, 0, 99, 0.6);
+    textAlign(CENTER);
+    textSize(10);
+    text(count, 25, 29);
+  }
 }
 
 void showCircle(int state) {
@@ -77,11 +110,12 @@ void showCircle(int state) {
   }
   ellipseMode(CENTER);
   //smooth();
-
   ellipse(25, 25, cwidth, cheight);
 }
 
 void startRecording() {
+  println("Start recording");
+  recordTimer = millis()/1000;
   messageId++;
   send("/record", messageId);
   recording = true;
@@ -89,11 +123,10 @@ void startRecording() {
 
 void draw() {
   //delay(250);
-
   background(0);
 
-  color c1 = color(358, 69, 73); // red
-  color c2 = color(53, 65, 73);  // yellow
+  color c1 = color(47, 40, 90); // yellow
+  color c2 = color(205, 60, 90);  // blue
 
   if (adjustTarget != current) {
 
@@ -101,20 +134,19 @@ void draw() {
     if (easing == true) {
       current += dTarget*speed;
     } else {
-      
+
       speed = (current < adjustTarget) ? abs(speed) : 0-abs(speed);
       println( "current:" + current );
       println( "target:" + adjustTarget );
       println( "speed:" + speed );
 
       if ( (speed > 0 && current+speed > adjustTarget) || (speed < 0 && current+speed < adjustTarget) ) {
-         println("blocked");
-         current = adjustTarget;
+        println("blocked");
+        current = adjustTarget;
       } else {
         current += speed;
       }
       println("current:" + current);
-
     }
     current = constrain(current, -1, 1);
 
@@ -132,22 +164,27 @@ void draw() {
   imageMode(CENTER);
   image(img, width/2, height/2, img.width/2, img.height/2);
 
-  if (pausing == false && recording == false && processing == false) {
+  if (debug == false && pausing == false && recording == false && processing == false) {
     startRecording();
+  } else if (recording == true) {
+    showRecording();
   } else if (processing == true) {
-    showCircle(2);
+    showMessage("Processing", 0, 0);
   } else if (pausing == true) {
-    showCircle(3);
+    if(average > 0){
+       pausing = false;
+    } else {
+      showPaused();
+    }
   }
+  
+  nextValue(in.left.level());
+  //showMessage(str(average));
 }
 
 /* incoming osc message are forwarded to the oscEvent method. */
 void oscEvent(OscMessage theOscMessage) {
-  /* print the address pattern and the typetag of the received OscMessage */
-  //print("### received an osc message.");
-  //print(" addrpattern: "+theOscMessage.addrPattern());
-  //println(" typetag: "+theOscMessage.typetag());
-
+  
   if (theOscMessage.checkAddrPattern("/recordingcomplete") == true) {
     recording = false;
     processing = true;
@@ -165,6 +202,17 @@ void oscEvent(OscMessage theOscMessage) {
       adjustTarget = map(score, -5, 5, -1, 1);
     }
   }
+}
+
+// Use the next value and calculate the
+// moving average
+public void nextValue(float value){
+  total -= data[p];
+  data[p] = value;
+  total += value;
+  p = ++p % data.length;
+  if(n < data.length) n++;
+  average = total / n;
 }
 
 void keyPressed() {
@@ -202,6 +250,7 @@ void keyPressed() {
     break;
   }
 
-
-  adjustTarget = map(_key, -5, 5, -1, 1);
+  if(debug == true){
+    adjustTarget = map(_key, -5, 5, -1, 1);
+  }
 } 

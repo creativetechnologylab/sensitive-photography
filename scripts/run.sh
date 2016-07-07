@@ -12,3 +12,4 @@ cd $DIR/../node-red && npm install
 cd $DIR/../node-red && ./run.sh
 
 open ${DIR}/../processing/ui/application.macosx/ui.app
+open http://127.0.0.1:1880/
