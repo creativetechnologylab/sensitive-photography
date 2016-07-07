@@ -32,7 +32,8 @@
     <string>Created with Processing</string>
     <!-- End of the set that can be customized -->
 
-    
+    <key>JVMRuntime</key>
+    <string>jdk1.8.0_92.jdk</string>
 
     <key>JVMMainClassName</key>
     <string>ui</string>
