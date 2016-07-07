@@ -37,7 +37,7 @@ OscMessage message;
 int messageId = 0;
 boolean processing = false;
 boolean recording = false;
-boolean pausing = true;
+boolean pausing = false;
 
 int pauseTimer;
 
@@ -51,7 +51,8 @@ public void setup() {
 
   oscP5 = new OscP5(this, 13000);
   location = new NetAddress("127.0.0.1", 12000);
-
+  
+  //int dd = displayDensity();
   
   img = loadImage("final_2400x1600.jpg");  // Load the image into the program
 
@@ -224,7 +225,7 @@ public void keyPressed() {
 
   adjustTarget = map(_key, -5, 5, -1, 1);
 } 
-  public void settings() {  size(700, 700);  pixelDensity(2); }
+  public void settings() {  size(700, 700);  pixelDensity(displayDensity()); }
   static public void main(String[] passedArgs) {
     String[] appletArgs = new String[] { "ui" };
     if (passedArgs != null) {

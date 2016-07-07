@@ -17,7 +17,7 @@ OscMessage message;
 int messageId = 0;
 boolean processing = false;
 boolean recording = false;
-boolean pausing = true;
+boolean pausing = false;
 
 int pauseTimer;
 
@@ -31,8 +31,9 @@ void setup() {
 
   oscP5 = new OscP5(this, 13000);
   location = new NetAddress("127.0.0.1", 12000);
-
-  pixelDensity(2);
+  
+  //int dd = displayDensity();
+  pixelDensity(displayDensity());
   img = loadImage("final_2400x1600.jpg");  // Load the image into the program
 
   c = color(358, 0, 73);
