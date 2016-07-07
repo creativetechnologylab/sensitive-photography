@@ -51,8 +51,8 @@ Minim minim;
 AudioInput in;
 
 public void setup() {
-  //fullScreen();
-   
+  
+   //size(1200, 800);
   colorMode(HSB, 360, 100, 100, 1.0f);
 
   oscP5 = new OscP5(this, 13000);
@@ -287,7 +287,7 @@ public void keyPressed() {
   }
 } 
 
-  public void settings() {  size(1200, 800);  pixelDensity(displayDensity()); }
+  public void settings() {  fullScreen();  pixelDensity(displayDensity()); }
   static public void main(String[] passedArgs) {
     String[] appletArgs = new String[] { "ui" };
     if (passedArgs != null) {
