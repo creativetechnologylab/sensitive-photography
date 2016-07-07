@@ -27,7 +27,7 @@ float adjustTarget = 0.0f;
 float current = 0.0f;
 int c;
 
-float speed = 0.08f;
+float speed = 0.05f;
 boolean easing = false;
 
 OscP5 oscP5;
@@ -51,8 +51,8 @@ Minim minim;
 AudioInput in;
 
 public void setup() {
-  
-  // size(1200, 800);
+  //fullScreen();
+   
   colorMode(HSB, 360, 100, 100, 1.0f);
 
   oscP5 = new OscP5(this, 13000);
@@ -145,8 +145,8 @@ public void draw() {
   //delay(250);
   background(0);
 
-  int c1 = color(47, 40, 90); // yellow
-  int c2 = color(205, 60, 90);  // blue
+  int c1 = color(51, 45, 80); // yellow
+  int c2 = color(214, 46, 59);  // blue
 
   if (adjustTarget != current) {
 
@@ -161,7 +161,7 @@ public void draw() {
       println( "speed:" + speed );
 
       if ( (speed > 0 && current+speed > adjustTarget) || (speed < 0 && current+speed < adjustTarget) ) {
-        println("blocked");
+        //println("blocked");
         current = adjustTarget;
       } else {
         current += speed;
@@ -172,10 +172,16 @@ public void draw() {
 
     println("=========");
 
+   int brightnessCentre = 50;
+   int brightDiff;
     if (current > 0) {
-      c = color(hue(c1), PApplet.parseInt(current*saturation(c1)), brightness(c1));
+      brightDiff = abs(PApplet.parseInt(brightnessCentre-brightness(c1)));
+      //println("bright:" + int(brightnessCentre+int(current*brightDiff)));
+      c = color(hue(c1), PApplet.parseInt(current*saturation(c1)), PApplet.parseInt(brightnessCentre+PApplet.parseInt(current*brightDiff)));
     } else {
-      c = color(hue(c2), PApplet.parseInt(abs(current)*saturation(c2)), brightness(c2));
+      brightDiff = PApplet.parseInt(brightnessCentre-brightness(c2));
+      //println("bright:" + int(brightnessCentre+int(current*brightDiff)));
+      c = color(hue(c2), PApplet.parseInt(abs(current)*saturation(c2)), PApplet.parseInt(brightnessCentre+PApplet.parseInt(current*brightDiff)));
     }
   }
 
@@ -238,7 +244,10 @@ public void nextValue(float value){
 public void keyPressed() {
   int _key = 0;
   switch(key) {
-  case '1':
+    case 'r':
+    _key = 0;
+    break;
+    case '1':
     _key = 1;
     break;
   case '2':
@@ -268,14 +277,17 @@ public void keyPressed() {
   case '0':
     _key = -5;
     break;
+  default:
+    _key = -99;
+  break;
   }
 
-  if(debug == true){
+  if(debug == true && _key != -99){
     adjustTarget = map(_key, -5, 5, -1, 1);
   }
 } 
 
-  public void settings() {  fullScreen();  pixelDensity(displayDensity()); }
+  public void settings() {  size(1200, 800);  pixelDensity(displayDensity()); }
   static public void main(String[] passedArgs) {
     String[] appletArgs = new String[] { "ui" };
     if (passedArgs != null) {

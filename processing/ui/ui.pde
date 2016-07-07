@@ -7,7 +7,7 @@ float adjustTarget = 0.0;
 float current = 0.0;
 color c;
 
-float speed = 0.08;
+float speed = 0.05;
 boolean easing = false;
 
 OscP5 oscP5;
@@ -31,8 +31,8 @@ Minim minim;
 AudioInput in;
 
 void setup() {
-  fullScreen();
-  // size(1200, 800);
+  //fullScreen();
+   size(1200, 800);
   colorMode(HSB, 360, 100, 100, 1.0);
 
   oscP5 = new OscP5(this, 13000);
@@ -125,8 +125,8 @@ void draw() {
   //delay(250);
   background(0);
 
-  color c1 = color(47, 40, 90); // yellow
-  color c2 = color(205, 60, 90);  // blue
+  color c1 = color(51, 45, 80); // yellow
+  color c2 = color(214, 46, 59);  // blue
 
   if (adjustTarget != current) {
 
@@ -141,7 +141,7 @@ void draw() {
       println( "speed:" + speed );
 
       if ( (speed > 0 && current+speed > adjustTarget) || (speed < 0 && current+speed < adjustTarget) ) {
-        println("blocked");
+        //println("blocked");
         current = adjustTarget;
       } else {
         current += speed;
@@ -152,10 +152,16 @@ void draw() {
 
     println("=========");
 
+   int brightnessCentre = 50;
+   int brightDiff;
     if (current > 0) {
-      c = color(hue(c1), int(current*saturation(c1)), brightness(c1));
+      brightDiff = abs(int(brightnessCentre-brightness(c1)));
+      //println("bright:" + int(brightnessCentre+int(current*brightDiff)));
+      c = color(hue(c1), int(current*saturation(c1)), int(brightnessCentre+int(current*brightDiff)));
     } else {
-      c = color(hue(c2), int(abs(current)*saturation(c2)), brightness(c2));
+      brightDiff = int(brightnessCentre-brightness(c2));
+      //println("bright:" + int(brightnessCentre+int(current*brightDiff)));
+      c = color(hue(c2), int(abs(current)*saturation(c2)), int(brightnessCentre+int(current*brightDiff)));
     }
   }
 
@@ -218,7 +224,10 @@ public void nextValue(float value){
 void keyPressed() {
   int _key = 0;
   switch(key) {
-  case '1':
+    case 'r':
+    _key = 0;
+    break;
+    case '1':
     _key = 1;
     break;
   case '2':
@@ -248,9 +257,12 @@ void keyPressed() {
   case '0':
     _key = -5;
     break;
+  default:
+    _key = -99;
+  break;
   }
 
-  if(debug == true){
+  if(debug == true && _key != -99){
     adjustTarget = map(_key, -5, 5, -1, 1);
   }
 } 
