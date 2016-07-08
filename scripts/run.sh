@@ -18,6 +18,6 @@ cd $DIR/../node-red && ./run.sh
 # Images directory.
 mkdir ~/Desktop/audio/
 
-sleep 2
+sleep 5
 open http://127.0.0.1:1880/
 open ${DIR}/../processing/ui/application.macosx/ui.app
