@@ -18,8 +18,8 @@ OscMessage message;
 int messageId = 0;
 boolean processing = false;
 boolean recording = false;
-boolean pausing = true;  // start 'true'
-boolean debug = false; 
+boolean pausing = true ;  // start 'true'
+boolean debug = true; 
 boolean initing = true; // start 'true'
 
 int recordTimer = millis()/1000;
@@ -49,8 +49,9 @@ void setup() {
   //int dd = displayDensity();
   pixelDensity(displayDensity());
   img = loadImage("final_2400x1600.jpg");  // Load the image into the program
-  dRatio = float(height)/float(img.height);
-  c = color(358, 0, 73);
+  //dRatio = float(height)/float(img.height);
+  dRatio = float(width)/float(img.width);
+  c = color(358, 0, 75);
 
   minim = new Minim(this);
 
@@ -141,7 +142,7 @@ void draw() {
   background(0);
 
   color c1 = color(51, 45, 80); // yellow
-  color c2 = color(214, 46, 59);  // blue
+  color c2 = color(214, 56, 80);  // blue
 
   if (adjustTarget != current) {
 
@@ -167,7 +168,7 @@ void draw() {
 
     println("=========");
 
-    int brightnessCentre = 50;
+    int brightnessCentre = 75;
     int brightDiff;
     if (current > 0) {
       brightDiff = abs(int(brightnessCentre-brightness(c1)));
@@ -184,7 +185,7 @@ void draw() {
 
   imageMode(CENTER);
   println(dRatio);
-  image(img, width/2, height/2, img.width*dRatio, height);
+  image(img, width/2, height/2, img.width*dRatio, img.height*dRatio);
 
   if (debug == false && pausing == false && recording == false && processing == false) {
     startRecording();

@@ -39,8 +39,8 @@ OscMessage message;
 int messageId = 0;
 boolean processing = false;
 boolean recording = false;
-boolean pausing = true;  // start 'true'
-boolean debug = false; 
+boolean pausing = true ;  // start 'true'
+boolean debug = true; 
 boolean initing = true; // start 'true'
 
 int recordTimer = millis()/1000;
@@ -70,8 +70,9 @@ public void setup() {
   //int dd = displayDensity();
   
   img = loadImage("final_2400x1600.jpg");  // Load the image into the program
-  dRatio = PApplet.parseFloat(height)/PApplet.parseFloat(img.height);
-  c = color(358, 0, 73);
+  //dRatio = float(height)/float(img.height);
+  dRatio = PApplet.parseFloat(width)/PApplet.parseFloat(img.width);
+  c = color(358, 0, 75);
 
   minim = new Minim(this);
 
@@ -162,7 +163,7 @@ public void draw() {
   background(0);
 
   int c1 = color(51, 45, 80); // yellow
-  int c2 = color(214, 46, 59);  // blue
+  int c2 = color(214, 56, 80);  // blue
 
   if (adjustTarget != current) {
 
@@ -188,7 +189,7 @@ public void draw() {
 
     println("=========");
 
-    int brightnessCentre = 50;
+    int brightnessCentre = 75;
     int brightDiff;
     if (current > 0) {
       brightDiff = abs(PApplet.parseInt(brightnessCentre-brightness(c1)));
@@ -205,7 +206,7 @@ public void draw() {
 
   imageMode(CENTER);
   println(dRatio);
-  image(img, width/2, height/2, img.width*dRatio, height);
+  image(img, width/2, height/2, img.width*dRatio, img.height*dRatio);
 
   if (debug == false && pausing == false && recording == false && processing == false) {
     startRecording();
