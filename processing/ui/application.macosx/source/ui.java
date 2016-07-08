@@ -6,6 +6,7 @@ import processing.opengl.*;
 import netP5.*; 
 import oscP5.*; 
 import ddf.minim.*; 
+import ddf.minim.analysis.*; 
 
 import java.util.HashMap; 
 import java.util.ArrayList; 
@@ -22,12 +23,13 @@ public class ui extends PApplet {
 
 
 
+
 PImage img; 
 float adjustTarget = 0.0f;
 float current = 0.0f;
 int c;
 
-float speed = 0.05f;
+float speed = 0.065f;
 boolean easing = false;
 
 OscP5 oscP5;
@@ -37,22 +39,27 @@ OscMessage message;
 int messageId = 0;
 boolean processing = false;
 boolean recording = false;
-boolean pausing = true;
-boolean debug = false;
+boolean pausing = true;  // start 'true'
+boolean debug = false; 
+boolean initing = true; // start 'true'
 
 int recordTimer = millis()/1000;
-int averageVolume;
+int initTimer;
 
-float[] data = new float[60];
-float total = 0, average = 0;
-int p = 0, n = 0;
+int audioThresholdTimer = millis()/1000;
+FloatList audioThresholdData = new FloatList();
+float threshold = 99999;
+float average;
 
+FFT fft;
 Minim minim;
 AudioInput in;
+int bufferSize = 1024;
+int sampleRate = 5512;
 
 public void setup() {
   
-   //size(1200, 800);
+  //size(1200, 800);
   colorMode(HSB, 360, 100, 100, 1.0f);
 
   oscP5 = new OscP5(this, 13000);
@@ -61,16 +68,21 @@ public void setup() {
   //int dd = displayDensity();
   
   img = loadImage("final_2400x1600.jpg");  // Load the image into the program
-
   c = color(358, 0, 73);
 
   minim = new Minim(this);
 
   // use the getLineIn method of the Minim object to get an AudioInput
-  in = minim.getLineIn();
-  
+  in = minim.getLineIn( Minim.MONO, bufferSize, sampleRate );
+  fft = new FFT( bufferSize, sampleRate );  
+
+  // Kill any existing recordings.
   send("/kill", 0);
   //delay(5000);
+
+  // Start init and threshold timers.
+  initTimer = (millis()/1000) + 30;
+  audioThresholdTimer = (millis()/1000) + 5;
 }
 
 public void send(String topic, int id) {
@@ -80,42 +92,39 @@ public void send(String topic, int id) {
 }
 
 public void showMessage(String msg, int offsetX, int offsetY) {
-  textSize(12);
+  textSize(14);
   textAlign(LEFT);
   fill(0, 0, 99);
-  text(msg, 20, 29);
+  text(msg, 20+offsetX, 29+offsetY);
 }
 
-public void showPaused(){
-  showMessage("Waiting. Please speak." + average, 0, 0);
+public void showPaused() {
+  showMessage("Waiting. Please speak.", 0, 0);
 }
 
 public void showRecording() {
   int now = millis()/1000;
   int count = 10 - (now-recordTimer);
-  
+
   showCircle(1);
-  if(count > 0) {
-    fill(0, 0, 99, 0.6f);
+  if (count > 0) {
+    fill(0, 0, 99, 0.7f);
     textAlign(CENTER);
-    textSize(10);
-    text(count, 25, 29);
+    textSize(14);
+    text(count, 25, 30);
   }
 }
 
 public void showCircle(int state) {
 
-  int cwidth = 20;
-  int cheight = 20;
-
-  float level = map(in.left.level(), 0, 0.05f, 0, 1);
-  level = constrain(level, 0, 1);
+  int cwidth = 30;
+  int cheight = 30;
 
   switch(state) {
   case 1:
     // Recording.
     fill(0, 99, 99, 0.75f);
-    cwidth = 20+PApplet.parseInt(30*in.left.level());
+    cwidth = cwidth+PApplet.parseInt(30*in.left.level());
     cheight = cwidth;
     break;
   case 2:
@@ -142,6 +151,10 @@ public void startRecording() {
 }
 
 public void draw() {
+
+  fft.forward(in.left);
+  average = getAverage();
+
   //delay(250);
   background(0);
 
@@ -172,8 +185,8 @@ public void draw() {
 
     println("=========");
 
-   int brightnessCentre = 50;
-   int brightDiff;
+    int brightnessCentre = 50;
+    int brightDiff;
     if (current > 0) {
       brightDiff = abs(PApplet.parseInt(brightnessCentre-brightness(c1)));
       //println("bright:" + int(brightnessCentre+int(current*brightDiff)));
@@ -197,20 +210,31 @@ public void draw() {
   } else if (processing == true) {
     showMessage("Processing", 0, 0);
   } else if (pausing == true) {
-    if(average > 0){
-       pausing = false;
+    if (average > threshold) {
+      pausing = false;
     } else {
       showPaused();
     }
+  } else if (debug == true) {
+    //showMessage(str(average), 0, 20);
+    //showRecording();
   }
-  
-  nextValue(in.left.level());
-  //showMessage(str(average));
+
+  checkThreshold();
+  int now = millis()/1000;
+  if (initing == true) {
+    if (initTimer > now) {
+      showMessage("Current levels:" + str(average) + ". Threshold: " + str(threshold), 0, 20);
+    } else {
+      pausing = false; 
+      initing = false;
+    }
+  }
 }
 
 /* incoming osc message are forwarded to the oscEvent method. */
 public void oscEvent(OscMessage theOscMessage) {
-  
+
   if (theOscMessage.checkAddrPattern("/recordingcomplete") == true) {
     recording = false;
     processing = true;
@@ -230,24 +254,43 @@ public void oscEvent(OscMessage theOscMessage) {
   }
 }
 
-// Use the next value and calculate the
-// moving average
-public void nextValue(float value){
-  total -= data[p];
-  data[p] = value;
-  total += value;
-  p = ++p % data.length;
-  if(n < data.length) n++;
-  average = total / n;
+public float getAverage() {
+  float avg = 0;
+  for (int i=0; i<fft.specSize(); i++) {
+    float value = fft.getBand(i);
+    avg += value;
+  }
+  avg /= fft.specSize();
+  return avg;
+}
+
+public void checkThreshold() {
+  int now = millis()/1000;
+
+  if (audioThresholdTimer > now) {
+    audioThresholdData.append(getAverage());
+  } else if (audioThresholdData.size() > 0) {
+    threshold = 0;
+    for (int i = 0, count = audioThresholdData.size(); i < count; i++) {
+      threshold += audioThresholdData.get(i);
+    }
+    threshold = (threshold/audioThresholdData.size())*2;
+    audioThresholdData = new FloatList();
+  }
 }
 
 public void keyPressed() {
+
+  if (key == 'q') {
+    audioThresholdTimer = (millis()/1000) + 5;
+  }
+
   int _key = 0;
   switch(key) {
-    case 'r':
+  case 'r':
     _key = 0;
     break;
-    case '1':
+  case '1':
     _key = 1;
     break;
   case '2':
@@ -279,10 +322,10 @@ public void keyPressed() {
     break;
   default:
     _key = -99;
-  break;
+    break;
   }
 
-  if(debug == true && _key != -99){
+  if (debug == true && _key != -99) {
     adjustTarget = map(_key, -5, 5, -1, 1);
   }
 } 
