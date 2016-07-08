@@ -40,7 +40,7 @@ int messageId = 0;
 boolean processing = false;
 boolean recording = false;
 boolean pausing = true ;  // start 'true'
-boolean debug = true; 
+boolean debug = false; 
 boolean initing = true; // start 'true'
 
 int recordTimer = millis()/1000;
