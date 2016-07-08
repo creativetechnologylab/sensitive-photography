@@ -88,8 +88,8 @@ void showPaused() {
 void showRecording() {
   int now = millis()/1000;
   int count = 10 - (now-recordTimer);
-  showMessage("I'm listening", 45, 0);
-
+  showMessage("I'm listening", 30, 0);
+ 
   showCircle(1);
   if (count > 0) {
     fill(0, 0, 99, 0.7);

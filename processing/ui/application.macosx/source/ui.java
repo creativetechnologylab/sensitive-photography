@@ -86,7 +86,7 @@ public void setup() {
 
   // Start init and threshold timers.
   initTimer = (millis()/1000) + 30;
-  audioThresholdTimer = (millis()/1000) + 5;
+  audioThresholdTimer = (millis()/1000) + 10;
 }
 
 public void send(String topic, int id) {
@@ -103,13 +103,14 @@ public void showMessage(String msg, int offsetX, int offsetY) {
 }
 
 public void showPaused() {
-  showMessage("Waiting. Please speak.", 0, 0);
+  showMessage("Please speak", 0, 0);
 }
 
 public void showRecording() {
   int now = millis()/1000;
   int count = 10 - (now-recordTimer);
-
+  showMessage("I'm listening", 30, 0);
+ 
   showCircle(1);
   if (count > 0) {
     fill(0, 0, 99, 0.7f);
@@ -213,7 +214,7 @@ public void draw() {
   } else if (recording == true) {
     showRecording();
   } else if (processing == true) {
-    showMessage("Processing", 0, 0);
+    showMessage("I'm thinking", 0, 0);
   } else if (pausing == true) {
     if (average > threshold) {
       pausing = false;
