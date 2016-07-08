@@ -29,7 +29,7 @@ float adjustTarget = 0.0f;
 float current = 0.0f;
 int c;
 
-float speed = 0.065f;
+float speed = 0.05f;
 boolean easing = false;
 
 OscP5 oscP5;
@@ -57,6 +57,8 @@ AudioInput in;
 int bufferSize = 1024;
 int sampleRate = 5512;
 
+float dRatio = 1.0f;
+
 public void setup() {
   
   //size(1200, 800);
@@ -68,6 +70,7 @@ public void setup() {
   //int dd = displayDensity();
   
   img = loadImage("final_2400x1600.jpg");  // Load the image into the program
+  dRatio = PApplet.parseFloat(height)/PApplet.parseFloat(img.height);
   c = color(358, 0, 73);
 
   minim = new Minim(this);
@@ -201,7 +204,8 @@ public void draw() {
   tint(hue(c), saturation(c), brightness(c));
 
   imageMode(CENTER);
-  image(img, width/2, height/2, img.width/2, img.height/2);
+  println(dRatio);
+  image(img, width/2, height/2, img.width*dRatio, height);
 
   if (debug == false && pausing == false && recording == false && processing == false) {
     startRecording();
@@ -329,7 +333,6 @@ public void keyPressed() {
     adjustTarget = map(_key, -5, 5, -1, 1);
   }
 } 
-
   public void settings() {  fullScreen();  pixelDensity(displayDensity()); }
   static public void main(String[] passedArgs) {
     String[] appletArgs = new String[] { "ui" };
