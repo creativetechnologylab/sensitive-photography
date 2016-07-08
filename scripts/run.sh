@@ -19,6 +19,7 @@ cd $DIR/../node-red && ./run.sh
 mkdir ~/Desktop/audio/
 
 sleep 5
-open ${DIR}/../processing/ui/application.macosx/ui.app
-sleep 5
 open http://127.0.0.1:1880/
+sleep 5
+open ${DIR}/../processing/ui/application.macosx/ui.app
+
