@@ -8,7 +8,7 @@ float adjustTarget = 0.0;
 float current = 0.0;
 color c;
 
-float speed = 0.065;
+float speed = 0.05;
 boolean easing = false;
 
 OscP5 oscP5;
@@ -36,6 +36,8 @@ AudioInput in;
 int bufferSize = 1024;
 int sampleRate = 5512;
 
+float dRatio = 1.0;
+
 void setup() {
   fullScreen();
   //size(1200, 800);
@@ -47,6 +49,7 @@ void setup() {
   //int dd = displayDensity();
   pixelDensity(displayDensity());
   img = loadImage("final_2400x1600.jpg");  // Load the image into the program
+  dRatio = float(height)/float(img.height);
   c = color(358, 0, 73);
 
   minim = new Minim(this);
@@ -180,7 +183,8 @@ void draw() {
   tint(hue(c), saturation(c), brightness(c));
 
   imageMode(CENTER);
-  image(img, width/2, height/2, img.width/2, img.height/2);
+  println(dRatio);
+  image(img, width/2, height/2, img.width*dRatio, height);
 
   if (debug == false && pausing == false && recording == false && processing == false) {
     startRecording();
