@@ -193,7 +193,7 @@ void draw() {
   } else if (recording == true) {
     showRecording();
   } else if (processing == true) {
-    showMessage("I'm thinking... please wait.", 0, 0);
+    showMessage("I'm thinking... please wait", 0, 0);
   } else if (pausing == true) {
     if (average > threshold) {
       pausing = false;
