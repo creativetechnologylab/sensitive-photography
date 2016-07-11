@@ -18,9 +18,9 @@ OscMessage message;
 int messageId = 0;
 boolean processing = false;
 boolean recording = false;
-boolean pausing = true ;  // start 'true'
-boolean debug = false; 
-boolean initing = true; // start 'true'
+boolean pausing = false ;  // start 'true'
+boolean debug = true; 
+boolean initing = false; // start 'true'
 
 int recordTimer = millis()/1000;
 int initTimer;
@@ -75,20 +75,20 @@ void send(String topic, int id) {
 }
 
 void showMessage(String msg, int offsetX, int offsetY) {
-  textSize(14);
+  textSize(18);
   textAlign(LEFT);
   fill(0, 0, 99);
-  text(msg, 20+offsetX, 29+offsetY);
+  text(msg.toUpperCase(), 20+offsetX, 29+offsetY);
 }
 
 void showPaused() {
-  showMessage("Please speak", 0, 0);
+  showMessage("What do you think of me?", 0, 0);
 }
 
 void showRecording() {
   int now = millis()/1000;
   int count = 10 - (now-recordTimer);
-  showMessage("I'm listening", 30, 0);
+  showMessage("I'm listening", 32, 3);
  
   showCircle(1);
   if (count > 0) {
@@ -202,7 +202,7 @@ void draw() {
     }
   } else if (debug == true) {
     //showMessage(str(average), 0, 20);
-    //showRecording();
+    showRecording();
   }
 
   checkThreshold();
@@ -259,7 +259,7 @@ void checkThreshold() {
     for (int i = 0, count = audioThresholdData.size(); i < count; i++) {
       threshold += audioThresholdData.get(i);
     }
-    threshold = (threshold/audioThresholdData.size())*2;
+    threshold = (threshold/audioThresholdData.size())*5;
     audioThresholdData = new FloatList();
   }
 }
