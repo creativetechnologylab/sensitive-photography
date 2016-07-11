@@ -96,10 +96,10 @@ public void send(String topic, int id) {
 }
 
 public void showMessage(String msg, int offsetX, int offsetY) {
-  textSize(18);
+  textSize(24);
   textAlign(LEFT);
   fill(0, 0, 99);
-  text(msg.toUpperCase(), 20+offsetX, 29+offsetY);
+  text(msg, 20+offsetX, 29+offsetY);
 }
 
 public void showPaused() {
@@ -109,7 +109,7 @@ public void showPaused() {
 public void showRecording() {
   int now = millis()/1000;
   int count = 10 - (now-recordTimer);
-  showMessage("I'm listening", 32, 3);
+  showMessage("I'm listening", 32, 5);
  
   showCircle(1);
   if (count > 0) {
@@ -163,7 +163,7 @@ public void draw() {
   //delay(250);
   background(0);
 
-  int c1 = color(51, 45, 80); // yellow
+  int c1 = color(51, 65, 80); // yellow
   int c2 = color(214, 56, 80);  // blue
 
   if (adjustTarget != current) {
@@ -255,6 +255,12 @@ public void oscEvent(OscMessage theOscMessage) {
 
     if (theOscMessage.checkTypetag("i")) {
       int score = theOscMessage.get(0).intValue();
+      if(score > 0 && score < 3){
+        score = 4;
+      }
+      if(score < 0 && score > -3){
+        score = -4;
+      }
       adjustTarget = map(score, -5, 5, -1, 1);
     }
   }
@@ -280,7 +286,7 @@ public void checkThreshold() {
     for (int i = 0, count = audioThresholdData.size(); i < count; i++) {
       threshold += audioThresholdData.get(i);
     }
-    threshold = (threshold/audioThresholdData.size())*5;
+    threshold = (threshold/audioThresholdData.size())*3;
     audioThresholdData = new FloatList();
   }
 }
