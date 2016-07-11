@@ -214,7 +214,7 @@ public void draw() {
   } else if (recording == true) {
     showRecording();
   } else if (processing == true) {
-    showMessage("I'm thinking, please wait.", 0, 0);
+    showMessage("I'm thinking... please wait.", 0, 0);
   } else if (pausing == true) {
     if (average > threshold) {
       pausing = false;
@@ -287,6 +287,7 @@ public void checkThreshold() {
       threshold += audioThresholdData.get(i);
     }
     threshold = (threshold/audioThresholdData.size())*3;
+    threshold = 1.5f;
     audioThresholdData = new FloatList();
   }
 }
