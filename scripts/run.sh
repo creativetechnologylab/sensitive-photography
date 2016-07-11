@@ -12,8 +12,9 @@ sed -i '' "s/gfoote/${USER}/g" $DIR/../node-red/flows.json
 sed -i '' "s/gfoote/${USER}/g" $DIR/../node-red/flows_cred.json
 
 # Restart node-red
+sleep 5
 cd $DIR/../node-red && npm install
-sleep 2
+sleep 10
 echo "node: `node --version`"
 echo "node-red: `which node-red`"
 cd $DIR/../node-red && ./run.sh
